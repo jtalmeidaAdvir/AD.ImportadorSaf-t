@@ -1,0 +1,6 @@
+C:\Users\jtalm\source\repos\AD.ImportadorSaf-t\AD.ImportadorSaf-t\bin\Debug\AD.ImportadorSaf-t.dll
+C:\Users\jtalm\source\repos\AD.ImportadorSaf-t\AD.ImportadorSaf-t\bin\Debug\AD.ImportadorSaf-t.pdb
+C:\Users\jtalm\source\repos\AD.ImportadorSaf-t\AD.ImportadorSaf-t\obj\Debug\AD.ImportadorSaf-t.csproj.AssemblyReference.cache
+C:\Users\jtalm\source\repos\AD.ImportadorSaf-t\AD.ImportadorSaf-t\obj\Debug\AD.ImportadorSaf-t.csproj.CoreCompileInputs.cache
+C:\Users\jtalm\source\repos\AD.ImportadorSaf-t\AD.ImportadorSaf-t\obj\Debug\AD.ImportadorSaf-t.dll
+C:\Users\jtalm\source\repos\AD.ImportadorSaf-t\AD.ImportadorSaf-t\obj\Debug\AD.ImportadorSaf-t.pdb
