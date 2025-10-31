@@ -14,7 +14,8 @@ namespace AD.ImportadorSaf_t
 {
     public partial class Menu : CustomForm
     {
-        private const string JAR_FILE = "FACTEMICLI-2.8.4-60332-cmdClient.jar";
+
+        private const string JAR_FILE = "FACTEMICLI-2.8.5-86076-cmdClient.jar";//"FACTEMICLI-2.8.4-60332-cmdClient.jar";
 
         public Menu()
         {
@@ -102,14 +103,18 @@ namespace AD.ImportadorSaf_t
             return null;
         }
 
-        private void ExecutarComando(string jarPath)
+        private async void ExecutarComando(string jarPath)
         {
             try
             {
                 btnExecutar.Enabled = false;
-                txtResultado.Text = "A executar comando...\r\n";
+                progressBar.Visible = true;
+                progressBar.Style = ProgressBarStyle.Marquee;
+                progressBar.MarqueeAnimationSpeed = 30;
 
-                string operacao = rbValidar.Checked ? "valida" : "enviar";
+                string operacao = rbValidar.Checked ? "validar" : "enviar";
+                lblStatus.Text = $"A {(rbValidar.Checked ? "validar" : "enviar")} ficheiro SAF-T...";
+                txtResultado.Text = "A executar comando...\r\n";
                 string workingDir = Path.GetDirectoryName(jarPath);
                 string outputFile = Path.Combine(workingDir, $"resultado-{operacao}.txt");
 
@@ -125,7 +130,7 @@ namespace AD.ImportadorSaf_t
 
                 ProcessStartInfo startInfo = new ProcessStartInfo
                 {
-                    FileName = "java",
+                    FileName = @"C:\Program Files\Eclipse Adoptium\jdk-17.0.17.10-hotspot\bin\java.exe", // Caminho absoluto do Java
                     Arguments = arguments,
                     WorkingDirectory = workingDir,
                     UseShellExecute = false,
@@ -136,70 +141,73 @@ namespace AD.ImportadorSaf_t
                     StandardErrorEncoding = Encoding.UTF8
                 };
 
-                using (Process process = new Process())
+                // Executar em Task separada para não bloquear a UI
+                await Task.Run(() =>
                 {
-                    process.StartInfo = startInfo;
-
-                    StringBuilder output = new StringBuilder();
-                    StringBuilder error = new StringBuilder();
-
-                    process.OutputDataReceived += (sender, e) =>
+                    using (Process process = new Process())
                     {
-                        if (!string.IsNullOrEmpty(e.Data))
+                        process.StartInfo = startInfo;
+
+                        process.OutputDataReceived += (sender, e) =>
                         {
-                            output.AppendLine(e.Data);
+                            if (!string.IsNullOrEmpty(e.Data))
+                            {
+                                this.Invoke((MethodInvoker)delegate
+                                {
+                                    txtResultado.AppendText(e.Data + "\r\n");
+                                });
+                            }
+                        };
+
+                        process.ErrorDataReceived += (sender, e) =>
+                        {
+                            if (!string.IsNullOrEmpty(e.Data))
+                            {
+                                this.Invoke((MethodInvoker)delegate
+                                {
+                                    txtResultado.AppendText("ERRO: " + e.Data + "\r\n");
+                                });
+                            }
+                        };
+
+                        process.Start();
+                        process.BeginOutputReadLine();
+                        process.BeginErrorReadLine();
+                        process.WaitForExit();
+
+                        // Ler ficheiro de resultado se existir
+                        if (File.Exists(outputFile))
+                        {
                             this.Invoke((MethodInvoker)delegate
                             {
-                                txtResultado.AppendText(e.Data + "\r\n");
+                                txtResultado.AppendText("\r\n=== RESULTADO DO FICHEIRO ===\r\n");
+                                txtResultado.AppendText(File.ReadAllText(outputFile, Encoding.UTF8));
                             });
                         }
-                    };
 
-                    process.ErrorDataReceived += (sender, e) =>
-                    {
-                        if (!string.IsNullOrEmpty(e.Data))
-                        {
-                            error.AppendLine(e.Data);
-                            this.Invoke((MethodInvoker)delegate
-                            {
-                                txtResultado.AppendText("ERRO: " + e.Data + "\r\n");
-                            });
-                        }
-                    };
-
-                    process.Start();
-                    process.BeginOutputReadLine();
-                    process.BeginErrorReadLine();
-                    process.WaitForExit();
-
-                    // Ler ficheiro de resultado se existir
-                    if (File.Exists(outputFile))
-                    {
                         this.Invoke((MethodInvoker)delegate
                         {
-                            txtResultado.AppendText("\r\n=== RESULTADO DO FICHEIRO ===\r\n");
-                            txtResultado.AppendText(File.ReadAllText(outputFile, Encoding.UTF8));
+                            progressBar.Visible = false;
+                            lblStatus.Text = "";
+                            txtResultado.AppendText($"\r\nProcesso terminado com código: {process.ExitCode}\r\n");
+                            btnExecutar.Enabled = true;
+
+                            if (process.ExitCode == 0)
+                            {
+                                MessageBox.Show("Operação concluída com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Operação concluída com erros. Verifique o resultado.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            }
                         });
                     }
-
-                    this.Invoke((MethodInvoker)delegate
-                    {
-                        txtResultado.AppendText($"\r\nProcesso terminado com código: {process.ExitCode}\r\n");
-                        btnExecutar.Enabled = true;
-
-                        if (process.ExitCode == 0)
-                        {
-                            MessageBox.Show("Operação concluída com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        }
-                        else
-                        {
-                            MessageBox.Show("Operação concluída com erros. Verifique o resultado.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        }
-                    });
-                }
+                });
             }
             catch (Exception ex)
             {
+                progressBar.Visible = false;
+                lblStatus.Text = "";
                 txtResultado.AppendText($"\r\nERRO: {ex.Message}\r\n");
                 MessageBox.Show($"Erro ao executar comando:\n{ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 btnExecutar.Enabled = true;
@@ -207,3 +215,4 @@ namespace AD.ImportadorSaf_t
         }
     }
 }
+ 

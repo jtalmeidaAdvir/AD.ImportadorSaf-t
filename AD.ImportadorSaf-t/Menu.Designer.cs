@@ -48,6 +48,8 @@ namespace AD.ImportadorSaf_t
             this.btnExecutar = new System.Windows.Forms.Button();
             this.txtResultado = new System.Windows.Forms.TextBox();
             this.lblResultado = new System.Windows.Forms.Label();
+            this.progressBar = new System.Windows.Forms.ProgressBar();
+            this.lblStatus = new System.Windows.Forms.Label();
             this.grpFicheiro.SuspendLayout();
             this.grpParametros.SuspendLayout();
             this.grpOperacao.SuspendLayout();
@@ -219,27 +221,48 @@ namespace AD.ImportadorSaf_t
             // 
             // txtResultado
             // 
-            this.txtResultado.Location = new System.Drawing.Point(12, 315);
+            this.txtResultado.Location = new System.Drawing.Point(12, 365);
             this.txtResultado.Multiline = true;
             this.txtResultado.Name = "txtResultado";
             this.txtResultado.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtResultado.Size = new System.Drawing.Size(760, 200);
+            this.txtResultado.Size = new System.Drawing.Size(760, 150);
             this.txtResultado.TabIndex = 4;
             // 
             // lblResultado
             // 
             this.lblResultado.AutoSize = true;
-            this.lblResultado.Location = new System.Drawing.Point(12, 295);
+            this.lblResultado.Location = new System.Drawing.Point(12, 345);
             this.lblResultado.Name = "lblResultado";
             this.lblResultado.Size = new System.Drawing.Size(73, 16);
             this.lblResultado.TabIndex = 5;
             this.lblResultado.Text = "Resultado:";
+            // 
+            // progressBar
+            // 
+            this.progressBar.Location = new System.Drawing.Point(12, 290);
+            this.progressBar.Name = "progressBar";
+            this.progressBar.Size = new System.Drawing.Size(760, 25);
+            this.progressBar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
+            this.progressBar.TabIndex = 6;
+            this.progressBar.Visible = false;
+            // 
+            // lblStatus
+            // 
+            this.lblStatus.AutoSize = true;
+            this.lblStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblStatus.ForeColor = System.Drawing.Color.Blue;
+            this.lblStatus.Location = new System.Drawing.Point(12, 320);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(0, 18);
+            this.lblStatus.TabIndex = 7;
             // 
             // Menu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 527);
+            this.Controls.Add(this.lblStatus);
+            this.Controls.Add(this.progressBar);
             this.Controls.Add(this.lblResultado);
             this.Controls.Add(this.txtResultado);
             this.Controls.Add(this.btnExecutar);
@@ -283,5 +306,7 @@ namespace AD.ImportadorSaf_t
         private System.Windows.Forms.Button btnExecutar;
         private System.Windows.Forms.TextBox txtResultado;
         private System.Windows.Forms.Label lblResultado;
+        private System.Windows.Forms.ProgressBar progressBar;
+        private System.Windows.Forms.Label lblStatus;
     }
 }
